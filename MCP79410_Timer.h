@@ -7,13 +7,15 @@
 class MCP79410_Timer {
   public:
     MCP79410_Timer(byte rtcAddress);
-    uint32_t getTotalSeconds();
-    void startRtc();
-    void stopRtc();
+    void start();
+    void stop();
+    void reset();
+    int status();
     uint8_t hours();
     uint8_t minutes();
     uint8_t seconds();
     String getTime();
+    uint32_t getTotalSeconds();
 
   private:
     // private methods
@@ -22,9 +24,10 @@ class MCP79410_Timer {
     uint8_t _makeDec(uint8_t num);
     uint8_t _makeHex(uint8_t num);
     unsigned char _getRtcData(const unsigned char adr, const unsigned char validbits);
-    String _format2digit(unsigned char data);
+    String _format2digit(const unsigned char data);
     // private variables
     byte _rtcAddress;
+    int _rtcState;
 
 };
 

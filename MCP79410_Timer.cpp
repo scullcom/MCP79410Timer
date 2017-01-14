@@ -6,17 +6,42 @@ MCP79410_Timer::MCP79410_Timer(byte rtcAddress){
   Wire.begin();
 }
 
-void MCP79410_Timer::startRtc(){
-  _writeRtcByte(0,0);       //STOP RTC
+
+void MCP79410_Timer::start(){
+  // get the seconds byte form RTC
+  byte secondsByte = _getRtcData(0, 8);
+  // bitwise OR between seconds byte and 1000 0000
+  // sets the first bit to 1 and leave the remaining 7 bits untouched
+  secondsByte = secondsByte | 0x80;
+  // write the updated byte back to the RTC
+  _writeRtcByte(0, secondsByte);
+  // set the state = 1 to indicate the clock is running
+  _rtcState = 1;
+}
+
+void MCP79410_Timer::stop(){
+  // get the seconds byte form RTC
+  byte secondsByte = _getRtcData(0, 8); // get the seconds byte form RTC
+  // bitwise AND between seconds byte and 0111 1111
+  // sets the first bit to 0 and leave the remaining 7 bits untouched
+  secondsByte = secondsByte & 0x7f;
+  _writeRtcByte(0, secondsByte);
+  // set the state = 2 to indicate the clock is stopped
+  _rtcState = 2;
+}
+
+void MCP79410_Timer::reset(){
+  // always force a the timer to stop before a reset
+  _writeRtcByte(0,0x00);     //SECOND=0 and Clock Stopped
   _writeRtcByte(1,0x00);    //MINUTE=00
   _writeRtcByte(2,0x00);    //HOUR=00
-  _writeRtcByte(0,0x80);    //START RTC, SECOND=00
+  // set the state = 2 to indicate the clock is reset & stopped
+  _rtcState = 0;
 }
 
-void MCP79410_Timer::stopRtc(){
-  _writeRtcByte(0,0);       //STOP RTC
+int MCP79410_Timer::status(){
+  return _rtcState;
 }
-
 
 uint32_t MCP79410_Timer::getTotalSeconds(){
   uint32_t hours = _makeDec(_getRtcData(2, 6)) * 60 * 60;   //convert hours to seconds
