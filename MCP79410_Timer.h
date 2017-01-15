@@ -7,6 +7,7 @@
 class MCP79410_Timer {
   public:
     MCP79410_Timer(byte rtcAddress);
+    MCP79410_Timer(void);
     void start();
     void stop();
     void reset();

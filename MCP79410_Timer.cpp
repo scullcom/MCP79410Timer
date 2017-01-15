@@ -6,6 +6,11 @@ MCP79410_Timer::MCP79410_Timer(byte rtcAddress){
   Wire.begin();
 }
 
+MCP79410_Timer::MCP79410_Timer(void){
+  _rtcAddress = 0x6f;
+  Wire.begin();
+}
+
 
 void MCP79410_Timer::start(){
   // get the seconds byte form RTC
